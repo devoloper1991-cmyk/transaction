@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaX | Pro Crypto Exchange & Copy Trading Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        bingx: {
+                            bg: '#0B0E14',
+                            panel: '#12161F',
+                            card: '#181E29',
+                            border: '#232A38',
+                            blue: '#2663EB',
+                            blueHover: '#1D4ED8',
+                            cyan: '#00D2FF',
+                            green: '#0ECB81',
+                            greenBg: 'rgba(14, 203, 129, 0.14)',
+                            red: '#F6465D',
+                            redBg: 'rgba(246, 70, 93, 0.14)',
+                            text: '#EAECEF',
+                            muted: '#848E9C'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for Trading Terminal */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0E14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #232A38;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #364156;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .tab-active-blue {
+            border-bottom: 2px solid #2663EB;
+            color: #FFFFFF;
+        }
+        .glass-glow {
+            box-shadow: 0 0 40px -10px rgba(38, 99, 235, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-bingx-bg text-bingx-text font-sans antialiased selection:bg-bingx-blue selection:text-white overflow-x-hidden">
+
+    <!-- ===================================================================== -->
+    <!-- 1. AUTHENTICATION GATE (LOGIN SCREEN)                                 -->
+    <!-- ===================================================================== -->
+    <div id="auth-screen" class="min-h-screen flex flex-col justify-between bg-[#080B10] relative overflow-hidden">
+        <!-- Decorative Background Elements -->
+        <div class="absolute top-[-10%] left-[-5%] w-[450px] h-[450px] bg-bingx-blue/15 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-bingx-cyan/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <!-- Top Minimal Header -->
+        <header class="w-full px-6 py-4 flex items-center justify-between border-b border-bingx-border/50 z-10">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-bingx-blue to-bingx-cyan flex items-center justify-center shadow-lg shadow-bingx-blue/30">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white">Nova<span class="text-bingx-cyan">X</span></span>
+                <span class="text-[10px] uppercase tracking-wider bg-bingx-blue/20 text-bingx-cyan px-2 py-0.5 rounded-full font-semibold border border-bingx-blue/30">Pro Exchange</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-bingx-muted">
+                <span class="hidden sm:inline-flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-bingx-green animate-pulse"></span>
+                    System Operational
+                </span>
+                <span class="bg-bingx-panel px-3 py-1.5 rounded-lg border border-bingx-border text-bingx-text">English / USDT</span>
+            </div>
+        </header>
+
+        <!-- Center Login Container -->
+        <main class="flex-1 flex items-center justify-center px-4 py-10 z-10">
+            <div class="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 bg-bingx-panel border border-bingx-border rounded-2xl overflow-hidden glass-glow">
+                
+                <!-- Left Promo Side -->
+                <div class="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-[#10192C] via-[#0D1320] to-[#0B0E14] p-8 flex-col justify-between border-r border-bingx-border">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bingx-blue/15 border border-bingx-blue/30 text-bingx-cyan text-xs font-medium mb-6">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            Social Copy Trading #1
+                        </div>
+                        <h2 class="text-2xl font-bold text-white leading-snug mb-3">
+                            Trade Smarter with Institutional Liquidity
+                        </h2>
+                        <p class="text-sm text-bingx-muted leading-relaxed">
+                            Eksekusi order ultra-cepat, charting real-time multi-timeframe, dan likuiditas mendalam untuk aset kripto utama dunia.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-bingx-bg/70 border border-bingx-border/80 rounded-xl p-4">
+                            <div class="flex items-center justify-between text-xs text-bingx-muted mb-1">
+                                <span>24h Global Volume</span>
+                                <span class="text-bingx-green font-mono">+18.42%</span>
+                            </div>
+                            <div class="text-xl font-bold font-mono text-white">$14,892,410,920</div>
+                        </div>
+                        <div class="flex items-center gap-3 text-xs text-bingx-muted">
+                            <svg class="w-4 h-4 text-bingx-green shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            <span>100% Proof of Reserves & Multi-Sig Custody</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Form Side -->
+                <div class="col-span-1 lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center">
+                    <div class="mb-7">
+                        <h1 class="text-2xl font-bold text-white mb-1.5">Log In to NovaX</h1>
+                        <p class="text-xs sm:text-sm text-bingx-muted">Masukkan kredensial akun trader Anda untuk mengakses terminal.</p>
+                    </div>
+
+                    <!-- Error Alert Box -->
+                    <div id="login-error" class="hidden mb-5 p-3.5 rounded-xl bg-bingx-redBg border border-bingx-red/40 flex items-center gap-3 text-xs text-bingx-red">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span id="login-error-text">Username atau Password salah.</span>
+                    </div>
+
+                    <form id="login-form" class="space-y-5" novalidate>
+                        <div>
+                            <label for="username" class="block text-xs font-medium text-bingx-muted mb-2">Account Username</label>
+                            <div class="relative">
+                                <input type="text" id="username" autocomplete="username" placeholder="Masukkan username Anda"
+                                    class="w-full bg-bingx-bg border border-bingx-border focus:border-bingx-blue focus:ring-1 focus:ring-bingx-blue rounded-xl px-4 py-3 text-sm text-white placeholder-bingx-muted/50 outline-none transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label for="password" class="block text-xs font-medium text-bingx-muted">Password</label>
+                                <button type="button" id="fill-demo-btn" class="text-[11px] text-bingx-cyan hover:underline">Isi Kredensial Otomatis</button>
+                            </div>
+                            <div class="relative">
+                                <input type="password" id="password" autocomplete="current-password" placeholder="Masukkan password Anda"
+                                    class="w-full bg-bingx-bg border border-bingx-border focus:border-bingx-blue focus:ring-1 focus:ring-bingx-blue rounded-xl px-4 py-3 pr-11 text-sm text-white placeholder-bingx-muted/50 outline-none transition">
+                                <button type="button" id="toggle-password" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-bingx-muted hover:text-white p-1" aria-label="Toggle Password">
+                                    <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-bingx-blue to-[#1E50D8] hover:from-bingx-blueHover hover:to-bingx-blue text-white font-semibold py-3.5 rounded-xl text-sm shadow-lg shadow-bingx-blue/25 transition transform active:scale-[0.99] cursor-pointer">
+                            Log In to Terminal
+                        </button>
+                    </form>
+
+                    <div class="mt-6 pt-5 border-t border-bingx-border/70 flex flex-wrap items-center justify-between gap-2 text-[11px] text-bingx-muted">
+                        <span>Protected by NovaX Shield 2FA</span>
+                        <span class="font-mono text-bingx-muted/80">Demo Account Ready</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="py-4 px-6 text-center text-xs text-bingx-muted/70 border-t border-bingx-border/40 z-10">
+            &copy; 2026 NovaX Global Exchange. All rights reserved. Trading derivatives involves high market risk.
+        </footer>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 2. MAIN CRYPTO EXCHANGE DASHBOARD (HIDDEN UNTIL LOGGED IN)            -->
+    <!-- ===================================================================== -->
+    <div id="dashboard-screen" class="hidden min-h-screen flex flex-col bg-bingx-bg text-bingx-text">
+        
+        <!-- TOP NAVBAR -->
+        <nav class="h-14 bg-bingx-panel border-b border-bingx-border px-3 lg:px-5 flex items-center justify-between sticky top-0 z-30">
+            <div class="flex items-center gap-6">
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-2 cursor-pointer">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-bingx-blue to-bingx-cyan flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
+                    <span class="text-lg font-bold tracking-tight text-white">Nova<span class="text-bingx-cyan">X</span></span>
+                </div>
+
+                <!-- Navigation Menu -->
+                <div class="hidden md:flex items-center gap-1 text-xs font-medium">
+                    <button class="nav-mode-btn px-3 py-2 rounded-lg text-bingx-muted hover:text-white transition" data-mode="Markets">Markets</button>
+                    <button class="nav-mode-btn px-3 py-2 rounded-lg bg-bingx-card text-white font-semibold border border-bingx-border/80" data-mode="Spot">Spot</button>
+                    <button class="nav-mode-btn px-3 py-2 rounded-lg text-bingx-muted hover:text-white transition flex items-center gap-1.5" data-mode="Futures">
+                        Futures
+                        <span class="text-[9px] px-1.5 py-0.2 bg-bingx-blue/20 text-bingx-cyan rounded font-semibold">125x</span>
+                    </button>
+                    <button class="nav-mode-btn px-3 py-2 rounded-lg text-bingx-muted hover:text-white transition flex items-center gap-1.5" data-mode="Copy Trading">
+                        Copy Trading
+                        <span class="w-1.5 h-1.5 rounded-full bg-bingx-green"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right User Controls -->
+            <div class="flex items-center gap-2.5 sm:gap-4">
+                <!-- Currency Display Switcher (USD / IDR) -->
+                <div class="hidden sm:flex items-center bg-bingx-bg border border-bingx-border rounded-xl p-0.5 text-[11px] font-semibold">
+                    <button id="curr-mode-both" class="curr-toggle-btn px-2 py-1 rounded-lg bg-bingx-card text-bingx-cyan transition cursor-pointer" data-curr="BOTH">USD + IDR</button>
+                    <button id="curr-mode-idr" class="curr-toggle-btn px-2 py-1 rounded-lg text-bingx-muted hover:text-white transition cursor-pointer" data-curr="IDR">IDR Only</button>
+                </div>
+
+                <!-- Demo Wallet Balance Pill -->
+                <div class="flex items-center gap-2 bg-bingx-bg border border-bingx-border px-3 py-1.5 rounded-xl">
+                    <div class="text-right">
+                        <div class="text-[10px] text-bingx-muted leading-none">Total Equity (USD / IDR)</div>
+                        <div class="text-xs sm:text-sm font-mono font-semibold text-white mt-0.5 leading-tight">
+                            <span id="nav-usdt-balance">25,480.50</span> <span class="text-bingx-cyan text-[11px]">USDT</span>
+                        </div>
+                        <div id="nav-idr-balance" class="text-[10px] font-mono text-bingx-green leading-tight">
+                            ≈ Rp 412.784.100
+                        </div>
+                    </div>
+                    <button id="reset-demo-btn" title="Reset Saldo & Data Riwayat" class="p-1.5 rounded-lg bg-bingx-card hover:bg-bingx-border text-bingx-muted hover:text-white transition">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    </button>
+                </div>
+
+                <!-- User Profile Badge -->
+                <div class="hidden sm:flex items-center gap-2 bg-bingx-card/70 border border-bingx-border px-3 py-1.5 rounded-xl">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-r from-bingx-blue to-indigo-500 flex items-center justify-center text-[11px] font-bold text-white">
+                        KA
+                    </div>
+                    <span id="nav-username" class="text-xs font-medium text-white">KhairuddinAmir91</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-bingx-greenBg text-bingx-green font-semibold">VIP 2</span>
+                </div>
+
+                <!-- Logout Button -->
+                <button id="logout-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bingx-redBg hover:bg-bingx-red text-bingx-red hover:text-white border border-bingx-red/30 text-xs font-semibold transition cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- TICKER HEADER BAR -->
+        <div class="bg-bingx-panel border-b border-bingx-border px-3 lg:px-5 py-2.5 flex flex-wrap items-center justify-between gap-4">
+            <!-- Pair Selector & Live Price -->
+            <div class="flex items-center gap-4 sm:gap-6">
+                <!-- Pair Switcher Pills -->
+                <div class="relative">
+                    <button id="pair-selector-btn" class="flex items-center gap-2.5 bg-bingx-card hover:bg-bingx-border/80 border border-bingx-border px-3 py-1.5 rounded-xl transition cursor-pointer">
+                        <div id="active-coin-icon" class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs">₿</div>
+                        <div class="text-left">
+                            <div class="flex items-center gap-1.5">
+                                <span id="active-pair-name" class="text-sm font-bold text-white">BTC/USDT</span>
+                                <svg class="w-3.5 h-3.5 text-bingx-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                            <span id="active-coin-fullname" class="block text-[10px] text-bingx-muted leading-none">Bitcoin Spot</span>
+                        </div>
+                    </button>
+
+                    <!-- Pair Dropdown Menu -->
+                    <div id="pair-dropdown" class="hidden absolute left-0 mt-2 w-64 bg-bingx-card border border-bingx-border rounded-xl shadow-2xl p-1.5 z-40">
+                        <div class="text-[10px] uppercase tracking-wider text-bingx-muted px-2.5 py-1.5 font-semibold">Select Trading Pair</div>
+                        <div id="pair-options-list" class="space-y-1">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Ticker Price -->
+                <div>
+                    <div id="ticker-price" class="text-lg sm:text-xl font-mono font-bold text-bingx-green leading-tight">92,450.00</div>
+                    <div id="ticker-usd-sub" class="text-[11px] font-mono text-bingx-muted">≈ $92,450.00 | <span id="ticker-idr-sub" class="text-bingx-cyan">Rp 1.497.690.000</span></div>
+                </div>
+            </div>
+
+            <!-- 24h Market Stats -->
+            <div class="flex items-center gap-5 sm:gap-8 overflow-x-auto pb-1 sm:pb-0 text-xs">
+                <div>
+                    <div class="text-[11px] text-bingx-muted">24h Change</div>
+                    <div id="ticker-change" class="font-mono font-semibold text-bingx-green mt-0.5">+3.42%</div>
+                </div>
+                <div>
+                    <div class="text-[11px] text-bingx-muted">24h High</div>
+                    <div id="ticker-high" class="font-mono text-white mt-0.5">93,880.00</div>
+                </div>
+                <div>
+                    <div class="text-[11px] text-bingx-muted">24h Low</div>
+                    <div id="ticker-low" class="font-mono text-white mt-0.5">89,120.50</div>
+                </div>
+                <div>
+                    <div class="text-[11px] text-bingx-muted">24h Volume (<span id="ticker-vol-coin">BTC</span>)</div>
+                    <div id="ticker-vol" class="font-mono text-white mt-0.5">28,491.64</div>
+                </div>
+                <div class="hidden xl:block">
+                    <div class="text-[11px] text-bingx-muted">24h Turnover (USDT)</div>
+                    <div id="ticker-turnover" class="font-mono text-white mt-0.5">2.63B</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- 3-COLUMN PROFESSIONAL TRADING TERMINAL GRID                       -->
+        <!-- ================================================================= -->
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-1.5 p-1.5 bg-bingx-bg">
+
+            <!-- LEFT / CENTER COLUMN (8 Cols on Desktop): CHART + ORDER ENTRY -->
+            <div class="lg:col-span-8 xl:col-span-9 flex flex-col gap-1.5">
+                
+                <!-- TOP: INTERACTIVE CANDLESTICK & LINE CHART -->
+                <div class="bg-bingx-panel border border-bingx-border rounded-xl flex flex-col overflow-hidden">
+                    <!-- Chart Toolbar -->
+                    <div class="px-3 py-2 border-b border-bingx-border flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-1">
+                            <span class="text-[11px] text-bingx-muted mr-1.5 font-medium">Time:</span>
+                            <button class="tf-btn px-2 py-1 rounded text-xs font-mono text-bingx-muted hover:text-white transition" data-tf="1m">1m</button>
+                            <button class="tf-btn px-2 py-1 rounded text-xs font-mono text-bingx-muted hover:text-white transition" data-tf="5m">5m</button>
+                            <button class="tf-btn px-2 py-1 rounded text-xs font-mono bg-bingx-card text-bingx-cyan font-semibold" data-tf="15m">15m</button>
+                            <button class="tf-btn px-2 py-1 rounded text-xs font-mono text-bingx-muted hover:text-white transition" data-tf="1H">1H</button>
+                            <button class="tf-btn px-2 py-1 rounded text-xs font-mono text-bingx-muted hover:text-white transition" data-tf="4H">4H</button>
+                            <button class="tf-btn px-2 py-1 rounded text-xs font-mono text-bingx-muted hover:text-white transition" data-tf="1D">1D</button>
+                        </div>
+
+                        <!-- Chart Mode & Indicators Legend -->
+                        <div class="flex items-center gap-3 text-[11px]">
+                            <div class="hidden sm:flex items-center gap-3 font-mono">
+                                <span class="text-amber-400">MA7: <span id="legend-ma7">--</span></span>
+                                <span class="text-purple-400">MA25: <span id="legend-ma25">--</span></span>
+                            </div>
+                            <div class="flex items-center bg-bingx-bg rounded-lg p-0.5 border border-bingx-border">
+                                <button id="chart-type-candle" class="px-2.5 py-1 rounded-md bg-bingx-card text-white font-medium transition">Candles</button>
+                                <button id="chart-type-line" class="px-2.5 py-1 rounded-md text-bingx-muted hover:text-white transition">Line</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OHLCV Live Readout Bar -->
+                    <div class="px-3 py-1.5 bg-bingx-bg/40 border-b border-bingx-border/50 flex flex-wrap items-center gap-4 text-[11px] font-mono text-bingx-muted">
+                        <span>O: <strong id="ohlc-o" class="text-white">--</strong></span>
+                        <span>H: <strong id="ohlc-h" class="text-bingx-green">--</strong></span>
+                        <span>L: <strong id="ohlc-l" class="text-bingx-red">--</strong></span>
+                        <span>C: <strong id="ohlc-c" class="text-white">--</strong></span>
+                        <span class="ml-auto text-[10px] text-bingx-cyan flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-bingx-cyan animate-ping"></span> Live Feed
+                        </span>
+                    </div>
+
+                    <!-- HTML5 Canvas Container -->
+                    <div id="chart-container" class="relative w-full h-[330px] sm:h-[380px] bg-[#0D1119] cursor-crosshair">
+                        <canvas id="trading-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- BOTTOM: ORDER ENTRY PANEL (BUY / SELL) -->
+                <div class="bg-bingx-panel border border-bingx-border rounded-xl p-3 sm:p-4">
+                    <!-- Order Type Tabs (Limit / Market) -->
+                    <div class="flex items-center justify-between border-b border-bingx-border pb-2.5 mb-3.5">
+                        <div class="flex items-center gap-5 text-xs font-semibold">
+                            <button id="order-type-limit" class="order-type-tab text-white border-b-2 border-bingx-blue pb-2 -mb-[11px] cursor-pointer">Limit</button>
+                            <button id="order-type-market" class="order-type-tab text-bingx-muted hover:text-white pb-2 -mb-[11px] cursor-pointer">Market</button>
+                        </div>
+                        <div class="text-[11px] text-bingx-muted flex items-center gap-2">
+                            <span>Margin Mode:</span>
+                            <span class="bg-bingx-card border border-bingx-border px-2 py-0.5 rounded text-white font-medium">Spot 1x</span>
+                        </div>
+                    </div>
+
+                    <!-- Dual Side-by-Side Buy & Sell Forms (BingX Pro Style) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        
+                        <!-- BUY / LONG COLUMN -->
+                        <div class="bg-bingx-bg/50 border border-bingx-border/80 rounded-xl p-3.5 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="font-semibold text-bingx-green">Buy / Long <span class="pair-base-label">BTC</span></span>
+                                    <span class="text-bingx-muted">Avbl: <strong id="avail-usdt-buy" class="font-mono text-white">25,480.50</strong> USDT</span>
+                                </div>
+
+                                <!-- Price Input -->
+                                <div>
+                                    <div class="flex items-center bg-bingx-panel border border-bingx-border focus-within:border-bingx-green rounded-lg px-3 py-2">
+                                        <span class="text-xs text-bingx-muted w-16">Price</span>
+                                        <input type="number" step="any" id="buy-price-input" class="w-full bg-transparent text-right font-mono text-sm text-white outline-none" placeholder="0.00">
+                                        <span class="text-xs text-bingx-muted ml-2">USDT</span>
+                                    </div>
+                                </div>
+
+                                <!-- Amount Input -->
+                                <div>
+                                    <div class="flex items-center bg-bingx-panel border border-bingx-border focus-within:border-bingx-green rounded-lg px-3 py-2">
+                                        <span class="text-xs text-bingx-muted w-16">Amount</span>
+                                        <input type="number" step="any" id="buy-amount-input" class="w-full bg-transparent text-right font-mono text-sm text-white outline-none" placeholder="0.0000">
+                                        <span class="text-xs text-bingx-muted ml-2 pair-base-label">BTC</span>
+                                    </div>
+                                </div>
+
+                                <!-- Percentage Quick Buttons -->
+                                <div class="grid grid-cols-4 gap-1.5">
+                                    <button type="button" class="buy-pct-btn py-1 rounded bg-bingx-card hover:bg-bingx-border text-[11px] font-mono text-bingx-muted hover:text-white transition" data-pct="0.25">25%</button>
+                                    <button type="button" class="buy-pct-btn py-1 rounded bg-bingx-card hover:bg-bingx-border text-[11px] font-mono text-bingx-muted hover:text-white transition" data-pct="0.50">50%</button>
+                                    <button type="button" class="buy-pct-btn py-1 rounded bg-bingx-card hover:bg-bingx-border text-[11px] font-mono text-bingx-muted hover:text-white transition" data-pct="0.75">75%</button>
+                                    <button type="button" class="buy-pct-btn py-1 rounded bg-bingx-card hover:bg-bingx-border text-[11px] font-mono text-bingx-muted hover:text-white transition" data-pct="1.00">100%</button>
+                                </div>
+
+                                <!-- Total Estimate -->
+                                <div class="flex items-center justify-between text-xs pt-1">
+                                    <span class="text-bingx-muted">Order Value</span>
+                                    <div class="text-right font-mono">
+                                        <div class="text-white"><span id="buy-total-usdt">0.00</span> USDT</div>
+                                        <div class="text-[10px] text-bingx-cyan">≈ <span id="buy-total-idr">Rp 0</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button id="execute-buy-btn" class="mt-4 w-full py-3 rounded-xl bg-bingx-green hover:bg-[#0bb571] text-[#08120E] font-bold text-sm shadow-lg shadow-bingx-green/20 transition active:scale-[0.99] cursor-pointer">
+                                Buy / Long <span class="pair-base-label">BTC</span>
+                            </button>
+                        </div>
+
+                        <!-- SELL / SHORT COLUMN -->
+                        <div class="bg-bingx-bg/50 border border-bingx-border/80 rounded-xl p-3.5 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="font-semibold text-bingx-red">Sell / Short <span class="pair-base-label">BTC</span></span>
+                                    <span class="text-bingx-muted">Avbl: <strong id="avail-coin-sell" class="font-mono text-white">0.1500</strong> <span class="pair-base-label">BTC</span></span>
+                                </div>
+
+                                <!-- Price Input -->
+                                <div>
+                                    <div class="flex items-center bg-bingx-panel border border-bingx-border focus-within:border-bingx-red rounded-lg px-3 py-2">
+                                        <span class="text-xs text-bingx-muted w-16">Price</span>
+                                        <input type="number" step="any" id="sell-price-input" class="w-full bg-transparent text-right font-mono text-sm text-white outline-none" placeholder="0.00">
+                                        <span class="text-xs text-bingx-muted ml-2">USDT</span>
+                                    </div>
+                                </div>
+
+                                <!-- Amount Input -->
+                                <div>
+                                    <div class="flex items-center bg-bingx-panel border border-bingx-border focus-within:border-bingx-red rounded-lg px-3 py-2">
+                                        <span class="text-xs text-bingx-muted w-16">Amount</span>
+                                        <input type="number" step="any" id="sell-amount-input" class="w-full bg-transparent text-right font-mono text-sm text-white outline-none" placeholder="0.0000">
+                                        <span class="text-xs text-bingx-muted ml-2 pair-base-label">BTC</span>
+                                    </div>
+                                </div>
+
+                                <!-- Percentage Quick Buttons -->
+                                <div class="grid grid-cols-4 gap-1.5">
+                                    <button type="button" class="sell-pct-btn py-1 rounded bg-bingx-card hover:bg-bingx-border text-[11px] font-mono text-bingx-muted hover:text-white transition" data-pct="0.25">25%</button>
+                                    <button type="button" class="sell-pct-btn py-1 rounded bg-bingx-card hover:bg-bingx-border text-[11px] font-mono text-bingx-muted hover:text-white transition" data-pct="0.50">50%</button>
+                                    <button type="button" class="sell-pct-btn py-1 rounded bg-bingx-card hover:bg-bingx-border text-[11px] font-mono text-bingx-muted hover:text-white transition" data-pct="0.75">75%</button>
+                                    <button type="button" class="sell-pct-btn py-1 rounded bg-bingx-card hover:bg-bingx-border text-[11px] font-mono text-bingx-muted hover:text-white transition" data-pct="1.00">100%</button>
+                                </div>
+
+                                <!-- Total Estimate -->
+                                <div class="flex items-center justify-between text-xs pt-1">
+                                    <span class="text-bingx-muted">Order Value</span>
+                                    <div class="text-right font-mono">
+                                        <div class="text-white"><span id="sell-total-usdt">0.00</span> USDT</div>
+                                        <div class="text-[10px] text-bingx-cyan">≈ <span id="sell-total-idr">Rp 0</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button id="execute-sell-btn" class="mt-4 w-full py-3 rounded-xl bg-bingx-red hover:bg-[#e0384e] text-white font-bold text-sm shadow-lg shadow-bingx-red/20 transition active:scale-[0.99] cursor-pointer">
+                                Sell / Short <span class="pair-base-label">BTC</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN (4 Cols on Desktop): ORDER BOOK + RECENT TRADES -->
+            <div class="lg:col-span-4 xl:col-span-3 flex flex-col gap-1.5">
+                
+                <!-- TOP RIGHT: ORDER BOOK -->
+                <div class="bg-bingx-panel border border-bingx-border rounded-xl p-3 flex flex-col">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-bingx-border">
+                        <h3 class="text-xs font-semibold text-white">Order Book</h3>
+                        <span class="text-[10px] font-mono text-bingx-muted">Depth 0.01</span>
+                    </div>
+
+                    <!-- Column Headers -->
+                    <div class="grid grid-cols-3 text-[10px] text-bingx-muted pb-1.5 font-medium">
+                        <span>Price (USDT)</span>
+                        <span class="text-right">Size (<span class="pair-base-label">BTC</span>)</span>
+                        <span class="text-right">Total</span>
+                    </div>
+
+                    <!-- ASKS (Red Sell Orders) -->
+                    <div id="orderbook-asks" class="space-y-0.5 font-mono text-[11px]">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- SPREAD / MARK PRICE MIDDLE BAR -->
+                    <div class="my-2 py-1.5 px-2.5 rounded-lg bg-bingx-bg border border-bingx-border/80 flex items-center justify-between">
+                        <div class="flex items-center gap-1.5">
+                            <span id="ob-mid-price" class="text-sm font-mono font-bold text-bingx-green">92,450.00</span>
+                            <svg id="ob-trend-arrow" class="w-3.5 h-3.5 text-bingx-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                        </div>
+                        <span class="text-[10px] font-mono text-bingx-muted">Spread: <span id="ob-spread">0.02%</span></span>
+                    </div>
+
+                    <!-- BIDS (Green Buy Orders) -->
+                    <div id="orderbook-bids" class="space-y-0.5 font-mono text-[11px]">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- BOTTOM RIGHT: RECENT TRADES -->
+                <div class="bg-bingx-panel border border-bingx-border rounded-xl p-3 flex-1 flex flex-col min-h-[240px]">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-bingx-border">
+                        <h3 class="text-xs font-semibold text-white">Recent Trades</h3>
+                        <span class="text-[10px] text-bingx-cyan">Real-time</span>
+                    </div>
+
+                    <div class="grid grid-cols-3 text-[10px] text-bingx-muted pb-1.5 font-medium">
+                        <span>Price (USDT)</span>
+                        <span class="text-right">Amount (<span class="pair-base-label">BTC</span>)</span>
+                        <span class="text-right">Time</span>
+                    </div>
+
+                    <div id="recent-trades-list" class="space-y-1 font-mono text-[11px] overflow-y-auto max-h-[235px] pr-0.5">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- BOTTOM PORTFOLIO / ORDERS PANEL                                   -->
+        <!-- ================================================================= -->
+        <div class="mx-1.5 mb-2 bg-bingx-panel border border-bingx-border rounded-xl overflow-hidden">
+            <!-- Tabs Header -->
+            <div class="px-4 border-b border-bingx-border flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-5 text-xs font-semibold overflow-x-auto">
+                    <button class="bottom-tab-btn py-3 tab-active-blue cursor-pointer whitespace-nowrap" data-tab="order-history">
+                        Order History Jan - Nov 2026 (<span id="order-history-count">0</span>)
+                    </button>
+                    <button class="bottom-tab-btn py-3 text-bingx-muted hover:text-white cursor-pointer whitespace-nowrap" data-tab="wallet-transfers">
+                        Wallet Transfer History (<span id="wallet-transfers-count">2</span>)
+                    </button>
+                    <button class="bottom-tab-btn py-3 text-bingx-muted hover:text-white cursor-pointer whitespace-nowrap" data-tab="open-orders">
+                        Open Orders (<span id="open-orders-count">0</span>)
+                    </button>
+                    <button class="bottom-tab-btn py-3 text-bingx-muted hover:text-white cursor-pointer whitespace-nowrap" data-tab="assets">
+                        Assets / Portfolio
+                    </button>
+                </div>
+                <div class="text-[11px] font-mono text-bingx-muted py-1.5">
+                    Kurs: <span class="text-white">1 USDT = Rp 16.200</span> • Tanggal Aktif: <span class="text-bingx-cyan">14 Nov 2026</span>
+                </div>
+            </div>
+
+            <!-- Tab Content Container -->
+            <div class="p-4 overflow-x-auto min-h-[220px]">
+                
+                <!-- 1. ORDER HISTORY TAB (DEFAULT ACTIVE - JAN TO NOV 14, 2026) -->
+                <div id="tab-order-history" class="bottom-tab-content">
+                    <!-- Monthly PnL Filter & Summary Bar -->
+                    <div class="mb-3.5 p-3 rounded-xl bg-bingx-bg border border-bingx-border flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs text-bingx-muted font-medium">Filter Bulan (2026):</span>
+                            <select id="history-month-filter" class="bg-bingx-card border border-bingx-border rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-bingx-blue">
+                                <option value="ALL">Semua Bulan (Januari - 14 November 2026)</option>
+                                <option value="1">Januari 2026 (+Rp 210.000)</option>
+                                <option value="2">Februari 2026 (+Rp 172.000)</option>
+                                <option value="3">Maret 2026 (+Rp 811.000)</option>
+                                <option value="4">April 2026 (+Rp 251.000)</option>
+                                <option value="5">Mei 2026 (+Rp 112.000)</option>
+                                <option value="6">Juni 2026 (+Rp 351.000 & Loss 12 Jun -Rp 49.115.000)</option>
+                                <option value="7">Juli 2026 (+Rp 153.000)</option>
+                                <option value="8">Agustus 2026 (+Rp 127.000)</option>
+                                <option value="9">September 2026 (+Rp 129.000)</option>
+                                <option value="10">Oktober 2026 (+Rp 128.000)</option>
+                                <option value="11">November 2026 s/d 14 Nov (+Rp 126.000)</option>
+                            </select>
+                            <span class="text-[10px] px-2 py-1 rounded bg-bingx-card text-bingx-muted border border-bingx-border/60">
+                                Desember 2026 terkunci (belum memasuki tanggal)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-4 text-xs font-mono">
+                            <div>
+                                <span class="text-bingx-muted">Net PnL Periode: </span>
+                                <span id="filtered-pnl-idr" class="font-bold text-bingx-red">-Rp 46.645.000</span>
+                                <span id="filtered-pnl-usd" class="text-[11px] text-bingx-muted ml-1">(-$2,879.32)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="max-h-[340px] overflow-y-auto pr-1">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="sticky top-0 bg-bingx-panel z-10">
+                                <tr class="text-bingx-muted border-b border-bingx-border/70">
+                                    <th class="pb-2.5 font-medium">Tanggal & Waktu</th>
+                                    <th class="pb-2.5 font-medium">Pair</th>
+                                    <th class="pb-2.5 font-medium">Side</th>
+                                    <th class="pb-2.5 font-medium">Executed Price</th>
+                                    <th class="pb-2.5 font-medium">Amount</th>
+                                    <th class="pb-2.5 font-medium">Total (USD / IDR)</th>
+                                    <th class="pb-2.5 font-medium">Realized PnL (USD / IDR)</th>
+                                    <th class="pb-2.5 font-medium text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-history-tbody" class="font-mono divide-y divide-bingx-border/40">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. WALLET TRANSFER HISTORY TAB -->
+                <div id="tab-wallet-transfers" class="bottom-tab-content hidden">
+                    <div class="mb-3 p-3 rounded-xl bg-bingx-bg border border-bingx-border flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="text-bingx-muted">Destination Wallet Address:</span>
+                            <code id="target-wallet-addr" class="px-2.5 py-1 rounded bg-bingx-card border border-bingx-border text-bingx-cyan font-mono text-[11px] select-all">0xBcED7FF0CCEDCc5aCF6F99243647DD4F5be73E82</code>
+                            <button id="copy-wallet-btn" class="px-2.5 py-1 rounded-lg bg-bingx-blue/20 hover:bg-bingx-blue text-bingx-cyan hover:text-white text-[11px] font-semibold transition cursor-pointer">Copy</button>
+                        </div>
+                        <div class="font-mono text-bingx-muted">
+                            Total Transfer Sukses: <strong class="text-white">Rp 25.350.000</strong> <span class="text-bingx-cyan">(≈ $1,564.81 USDT)</span>
+                        </div>
+                    </div>
+
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="text-bingx-muted border-b border-bingx-border/70">
+                                <th class="pb-2.5 font-medium">Tanggal</th>
+                                <th class="pb-2.5 font-medium">Jenis Transaksi</th>
+                                <th class="pb-2.5 font-medium">Jaringan / Wallet Tujuan</th>
+                                <th class="pb-2.5 font-medium">Nominal (IDR)</th>
+                                <th class="pb-2.5 font-medium">Ekuivalen (USDT)</th>
+                                <th class="pb-2.5 font-medium">TxID Hash</th>
+                                <th class="pb-2.5 font-medium text-right">Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wallet-transfers-tbody" class="font-mono divide-y divide-bingx-border/40">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 3. OPEN ORDERS TAB -->
+                <div id="tab-open-orders" class="bottom-tab-content hidden">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="text-bingx-muted border-b border-bingx-border/70">
+                                <th class="pb-2.5 font-medium">Time</th>
+                                <th class="pb-2.5 font-medium">Pair</th>
+                                <th class="pb-2.5 font-medium">Type</th>
+                                <th class="pb-2.5 font-medium">Side</th>
+                                <th class="pb-2.5 font-medium">Limit Price</th>
+                                <th class="pb-2.5 font-medium">Amount</th>
+                                <th class="pb-2.5 font-medium">Total (USD / IDR)</th>
+                                <th class="pb-2.5 font-medium text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="open-orders-tbody" class="font-mono divide-y divide-bingx-border/40">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                    <div id="no-open-orders" class="py-8 text-center text-xs text-bingx-muted">
+                        Tidak ada Open Limit Order yang sedang menunggu eksekusi.
+                    </div>
+                </div>
+
+                <!-- 4. ASSETS / PORTFOLIO TAB -->
+                <div id="tab-assets" class="bottom-tab-content hidden">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="text-bingx-muted border-b border-bingx-border/70">
+                                <th class="pb-2.5 font-medium">Asset</th>
+                                <th class="pb-2.5 font-medium">Available Balance</th>
+                                <th class="pb-2.5 font-medium">In Order</th>
+                                <th class="pb-2.5 font-medium">Market Price (USD / IDR)</th>
+                                <th class="pb-2.5 font-medium text-right">Est. Value (USD / IDR)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assets-tbody" class="font-mono divide-y divide-bingx-border/40">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TOAST NOTIFICATION CONTAINER                                          -->
+    <!-- ===================================================================== -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- ===================================================================== -->
+    <!-- JAVASCRIPT APPLICATION ENGINE                                         -->
+    <!-- ===================================================================== -->
+    <script>
+        (function () {
+            'use strict';
+
+            // -----------------------------------------------------------------
+            // 1. CREDENTIALS, CURRENCY RATE & SESSION STORAGE KEYS
+            // -----------------------------------------------------------------
+            const VALID_USER = 'KhairuddinAmir91';
+            const VALID_PASS = 'KhairuddinAmir9!';
+            const SESSION_KEY = 'novax_auth_session_v2';
+            const STATE_KEY = 'novax_portfolio_state_v2';
+            const USD_TO_IDR = 16200; // Kurs acuan 1 USD/USDT = Rp 16.200
+            const TARGET_WALLET = '0xBcED7FF0CCEDCc5aCF6F99243647DD4F5be73E82';
+
+            function formatIDR(amountIdr, withSign = false) {
+                const absVal = Math.round(Math.abs(amountIdr));
+                const formatted = 'Rp ' + absVal.toLocaleString('id-ID');
+                if (amountIdr < 0) return '-' + formatted;
+                if (withSign && amountIdr > 0) return '+' + formatted;
+                return formatted;
+            }
+
+            function formatUSD(amountUsd, withSign = false) {
+                const absVal = Math.abs(amountUsd).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                if (amountUsd < 0) return '-$' + absVal;
+                if (withSign && amountUsd > 0) return '+$' + absVal;
+                return '$' + absVal;
+            }
+
+            // -----------------------------------------------------------------
+            // 2. MARKET DATA, MONTHLY HISTORY GENERATOR & WALLET TRANSFERS
+            // -----------------------------------------------------------------
+            const MARKETS = {
+                'BTC/USDT': {
+                    base: 'BTC',
+                    name: 'Bitcoin Spot',
+                    icon: '₿',
+                    iconBg: 'bg-amber-500/20 text-amber-400',
+                    price: 92450.00,
+                    prevPrice: 92450.00,
+                    change24h: 3.42,
+                    high24h: 93880.00,
+                    low24h: 89120.50,
+                    vol24h: 28491.64,
+                    decimals: 2,
+                    amountDecimals: 4,
+                    volatility: 48.0
+                },
+                'ETH/USDT': {
+                    base: 'ETH',
+                    name: 'Ethereum Spot',
+                    icon: 'Ξ',
+                    iconBg: 'bg-indigo-500/20 text-indigo-400',
+                    price: 3340.50,
+                    prevPrice: 3340.50,
+                    change24h: 2.18,
+                    high24h: 3412.00,
+                    low24h: 3255.80,
+                    vol24h: 194820.15,
+                    decimals: 2,
+                    amountDecimals: 4,
+                    volatility: 3.2
+                },
+                'SOL/USDT': {
+                    base: 'SOL',
+                    name: 'Solana Spot',
+                    icon: '◎',
+                    iconBg: 'bg-emerald-500/20 text-emerald-400',
+                    price: 214.80,
+                    prevPrice: 214.80,
+                    change24h: 5.64,
+                    high24h: 221.40,
+                    low24h: 201.90,
+                    vol24h: 1420890.50,
+                    decimals: 2,
+                    amountDecimals: 3,
+                    volatility: 0.45
+                },
+                'TON/USDT': {
+                    base: 'TON',
+                    name: 'Toncoin Spot',
+                    icon: '💎',
+                    iconBg: 'bg-sky-500/20 text-sky-400',
+                    price: 6.425,
+                    prevPrice: 6.425,
+                    change24h: -1.12,
+                    high24h: 6.680,
+                    low24h: 6.310,
+                    vol24h: 8492110.00,
+                    decimals: 3,
+                    amountDecimals: 2,
+                    volatility: 0.018
+                }
+            };
+
+            const WALLET_TRANSFERS = [
+                {
+                    id: 'WD-20260612-02',
+                    date: '12 Jun 2026, 15:42:19',
+                    type: 'External Wallet Transfer',
+                    network: 'ERC20 / BEP20',
+                    wallet: TARGET_WALLET,
+                    amountIdr: 25000000,
+                    amountUsdt: 25000000 / USD_TO_IDR,
+                    txHash: '0x94a8f1c7e2b04d38...71e4b9a2',
+                    status: 'Sukses'
+                },
+                {
+                    id: 'WD-20260602-01',
+                    date: '02 Jun 2026, 10:18:05',
+                    type: 'External Wallet Transfer',
+                    network: 'ERC20 / BEP20',
+                    wallet: TARGET_WALLET,
+                    amountIdr: 350000,
+                    amountUsdt: 350000 / USD_TO_IDR,
+                    txHash: '0x3c71d9a4f812b605...49c2e811',
+                    status: 'Sukses'
+                }
+            ];
+
+            /**
+             * Menghasilkan riwayat transaksi kripto mulai Januari s/d 14 November 2026.
+             * Setiap bulan memiliki beberapa transaksi random dengan total keuntungan bulanan persis:
+             * Jan: 210rb | Feb: 172rb | Mar: 811rb | Apr: 251rb | Mei: 112rb
+             * Jun: 351rb (plus kerugian khusus tgl 12 Juni sebesar Rp 49.115.000)
+             * Jul: 153rb | Agu: 127rb | Sep: 129rb | Okt: 128rb | Nov (s/d 14 Nov): 126rb
+             * Des (124rb) tidak ditampilkan karena tanggal saat ini 14 November 2026.
+             */
+            function buildHistoricalTransactions2026() {
+                const monthlySpecs = [
+                    { month: 1,  name: 'Jan', maxDay: 31, profitIdr: 210000, splits: [65000, 48000, 55000, 42000] },
+                    { month: 2,  name: 'Feb', maxDay: 28, profitIdr: 172000, splits: [52000, 40000, 45000, 35000] },
+                    { month: 3,  name: 'Mar', maxDay: 31, profitIdr: 811000, splits: [240000, 195000, 216000, 160000] },
+                    { month: 4,  name: 'Apr', maxDay: 30, profitIdr: 251000, splits: [81000, 62000, 58000, 50000] },
+                    { month: 5,  name: 'Mei', maxDay: 31, profitIdr: 112000, splits: [38000, 29000, 25000, 20000] },
+                    { month: 6,  name: 'Jun', maxDay: 30, profitIdr: 351000, splits: [115000, 96000, 82000, 58000], specialLossDate: '12 Jun 2026, 14:15:32', specialLossIdr: -4911500 },
+                    { month: 7,  name: 'Jul', maxDay: 31, profitIdr: 153000, splits: [48000, 39000, 36000, 30000] },
+                    { month: 8,  name: 'Agu', maxDay: 31, profitIdr: 127000, splits: [42000, 33000, 28000, 24000] },
+                    { month: 9,  name: 'Sep', maxDay: 30, profitIdr: 129000, splits: [44000, 31000, 29000, 25000] },
+                    { month: 10, name: 'Okt', maxDay: 31, profitIdr: 128000, splits: [40000, 34000, 28000, 26000] },
+                    { month: 11, name: 'Nov', maxDay: 14, profitIdr: 126000, splits: [42000, 32000, 28000, 24000] }
+                ];
+
+                const pairsPool = [
+                    { pair: 'BTC/USDT', basePrice: 91200, amt: 0.0450 },
+                    { pair: 'ETH/USDT', basePrice: 3290,  amt: 1.2500 },
+                    { pair: 'SOL/USDT', basePrice: 209.5, amt: 14.500 },
+                    { pair: 'TON/USDT', basePrice: 6.38,  amt: 320.00 }
+                ];
+
+                const records = [];
+                let seq = 1001;
+
+                monthlySpecs.forEach(spec => {
+                    const dayStep = Math.max(2, Math.floor(spec.maxDay / spec.splits.length));
+                    spec.splits.forEach((pnlIdr, idx) => {
+                        const day = Math.min(spec.maxDay, 2 + idx * dayStep + (idx % 2));
+                        const dayStr = String(day).padStart(2, '0');
+                        const hourStr = String(9 + idx * 3).padStart(2, '0');
+                        const minStr = String((14 + idx * 17) % 60).padStart(2, '0');
+                        const pInfo = pairsPool[(spec.month + idx) % pairsPool.length];
+                        const totalUsd = pInfo.basePrice * pInfo.amt;
+                        const pnlUsd = pnlIdr / USD_TO_IDR;
+
+                        records.push({
+                            id: 'HIS-' + (seq++),
+                            month: spec.month,
+                            time: `${dayStr} ${spec.name} 2026, ${hourStr}:${minStr}:18`,
+                            pair: pInfo.pair,
+                            type: idx % 2 === 0 ? 'Spot Limit' : 'Spot Market',
+                            side: idx % 2 === 0 ? 'SELL' : 'BUY',
+                            price: pInfo.basePrice,
+                            amount: pInfo.amt,
+                            total: totalUsd,
+                            totalIdr: totalUsd * USD_TO_IDR,
+                            pnlIdr: pnlIdr,
+                            pnlUsd: pnlUsd,
+                            status: 'Filled'
+                        });
+                    });
+
+                    // Transaksi kerugian besar khusus tanggal 12 Juni 2026 (-Rp 4.911.500)
+                    if (spec.specialLossIdr) {
+                        const lossUsd = spec.specialLossIdr / USD_TO_IDR;
+                        records.push({
+                            id: 'HIS-12JUN-LOSS',
+                            month: 6,
+                            time: spec.specialLossDate,
+                            pair: 'BTC/USDT',
+                            type: 'Futures Stop-Loss',
+                            side: 'SELL',
+                            price: 88410.00,
+                            amount: 0.4200,
+                            total: 37132.20,
+                            totalIdr: 37132.20 * USD_TO_IDR,
+                            pnlIdr: spec.specialLossIdr,
+                            pnlUsd: lossUsd,
+                            status: 'Liquidated / SL'
+                        });
+                    }
+                });
+
+                // Urutkan terbaru di atas (November -> Januari)
+                return records.reverse();
+            }
+
+            const DEFAULT_PORTFOLIO = {
+                balances: {
+                    USDT: 25480.50,
+                    BTC: 0.1500,
+                    ETH: 2.5000,
+                    SOL: 18.000,
+                    TON: 450.00
+                },
+                locked: {
+                    USDT: 0,
+                    BTC: 0,
+                    ETH: 0,
+                    SOL: 0,
+                    TON: 0
+                },
+                openOrders: [],
+                orderHistory: buildHistoricalTransactions2026()
+            };
+
+            // Application Runtime State
+            let portfolio = loadPortfolio();
+            let activePair = 'BTC/USDT';
+            let activeTimeframe = '15m';
+            let chartType = 'candle'; // 'candle' | 'line'
+            let orderType = 'Limit';    // 'Limit' | 'Market'
+            let currencyDisplayMode = 'BOTH'; // 'BOTH' | 'IDR'
+            let selectedHistoryMonth = 'ALL';
+            let candles = [];
+            let recentTrades = [];
+            let mousePos = null;
+            let liveInterval = null;
+
+            // -----------------------------------------------------------------
+            // 3. PERSISTENCE HELPERS
+            // -----------------------------------------------------------------
+            function loadPortfolio() {
+                try {
+                    const saved = localStorage.getItem(STATE_KEY);
+                    if (saved) {
+                        return JSON.parse(saved);
+                    }
+                } catch (e) {
+                    console.warn('Could not load saved portfolio:', e);
+                }
+                return JSON.parse(JSON.stringify(DEFAULT_PORTFOLIO));
+            }
+
+            function savePortfolio() {
+                try {
+                    localStorage.setItem(STATE_KEY, JSON.stringify(portfolio));
+                } catch (e) {
+                    console.warn('Could not save portfolio:', e);
+                }
+            }
+
+            // -----------------------------------------------------------------
+            // 4. TOAST NOTIFICATION SYSTEM
+            // -----------------------------------------------------------------
+            function showToast(title, message, type = 'success') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                
+                const styles = {
+                    success: 'bg-bingx-card border-bingx-green/60 text-white',
+                    error: 'bg-bingx-card border-bingx-red/60 text-white',
+                    info: 'bg-bingx-card border-bingx-blue/60 text-white'
+                };
+                const iconColors = {
+                    success: 'text-bingx-green bg-bingx-greenBg',
+                    error: 'text-bingx-red bg-bingx-redBg',
+                    info: 'text-bingx-cyan bg-bingx-blue/20'
+                };
+
+                toast.className = `pointer-events-auto border rounded-xl p-3.5 shadow-2xl flex items-start gap-3 transition-all duration-300 transform translate-y-2 opacity-0 ${styles[type] || styles.info}`;
+                toast.innerHTML = `
+                    <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${iconColors[type] || iconColors.info}">
+                        ${type === 'error'
+                            ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>'
+                            : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>'
+                        }
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold">${title}</div>
+                        <div class="text-[11px] text-bingx-muted mt-0.5 leading-relaxed">${message}</div>
+                    </div>
+                `;
+
+                container.appendChild(toast);
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-y-2', 'opacity-0');
+                });
+
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-2');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3800);
+            }
+
+            // -----------------------------------------------------------------
+            // 5. AUTHENTICATION LOGIC (LOGIN / LOGOUT)
+            // -----------------------------------------------------------------
+            const authScreen = document.getElementById('auth-screen');
+            const dashboardScreen = document.getElementById('dashboard-screen');
+            const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+            const loginErrorText = document.getElementById('login-error-text');
+
+            function checkAuthSession() {
+                const session = sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY);
+                if (session === VALID_USER) {
+                    showDashboard();
+                } else {
+                    showLogin();
+                }
+            }
+
+            function showLogin() {
+                authScreen.classList.remove('hidden');
+                dashboardScreen.classList.add('hidden');
+                if (liveInterval) {
+                    clearInterval(liveInterval);
+                    liveInterval = null;
+                }
+            }
+
+            function showDashboard() {
+                authScreen.classList.add('hidden');
+                dashboardScreen.classList.remove('hidden');
+                document.getElementById('nav-username').textContent = VALID_USER;
+                initTerminal();
+            }
+
+            loginForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const userVal = document.getElementById('username').value.trim();
+                const passVal = document.getElementById('password').value;
+
+                if (userVal === VALID_USER && passVal === VALID_PASS) {
+                    loginError.classList.add('hidden');
+                    sessionStorage.setItem(SESSION_KEY, VALID_USER);
+                    localStorage.setItem(SESSION_KEY, VALID_USER);
+                    showDashboard();
+                    showToast('Login Berhasil', `Selamat datang kembali, ${VALID_USER}! Terminal siap digunakan.`, 'success');
+                } else {
+                    loginErrorText.textContent = 'Akses ditolak: Username atau Password tidak sesuai dengan akun terdaftar.';
+                    loginError.classList.remove('hidden');
+                }
+            });
+
+            // Toggle Password Visibility
+            document.getElementById('toggle-password').addEventListener('click', function () {
+                const passInput = document.getElementById('password');
+                passInput.type = passInput.type === 'password' ? 'text' : 'password';
+            });
+
+            // Quick Auto-Fill Button for Convenience
+            document.getElementById('fill-demo-btn').addEventListener('click', function () {
+                document.getElementById('username').value = VALID_USER;
+                document.getElementById('password').value = VALID_PASS;
+                loginError.classList.add('hidden');
+            });
+
+            // Logout Handler
+            document.getElementById('logout-btn').addEventListener('click', function () {
+                sessionStorage.removeItem(SESSION_KEY);
+                localStorage.removeItem(SESSION_KEY);
+                document.getElementById('password').value = '';
+                showLogin();
+            });
+
+            // -----------------------------------------------------------------
+            // 6. CHART GENERATION & HTML5 CANVAS RENDERER
+            // -----------------------------------------------------------------
+            function generateInitialCandles(pairKey, count = 65) {
+                const market = MARKETS[pairKey];
+                const list = [];
+                let currentClose = market.price;
+                const vol = market.volatility;
+                const now = Date.now();
+                const stepMs = 15 * 60 * 1000;
+
+                // Walk backwards to build natural-looking historical candles
+                const temp = [];
+                for (let i = 0; i < count; i++) {
+                    const change = (Math.random() - 0.49) * vol * 2.2;
+                    const open = currentClose - change;
+                    const high = Math.max(open, currentClose) + Math.random() * vol * 1.1;
+                    const low = Math.min(open, currentClose) - Math.random() * vol * 1.1;
+                    const volume = (Math.random() * 120 + 15).toFixed(2);
+                    temp.unshift({
+                        time: now - i * stepMs,
+                        open,
+                        high,
+                        low,
+                        close: currentClose,
+                        volume: parseFloat(volume)
+                    });
+                    currentClose = open;
+                }
+                return temp;
+            }
+
+            function calculateMA(data, period) {
+                return data.map((_, idx) => {
+                    if (idx < period - 1) return null;
+                    let sum = 0;
+                    for (let j = 0; j < period; j++) {
+                        sum += data[idx - j].close;
+                    }
+                    return sum / period;
+                });
+            }
+
+            function renderChart() {
+                const container = document.getElementById('chart-container');
+                const canvas = document.getElementById('trading-chart');
+                if (!container || !canvas || candles.length === 0) return;
+
+                const dpr = window.devicePixelRatio || 1;
+                const rect = container.getBoundingClientRect();
+                canvas.width = rect.width * dpr;
+                canvas.height = rect.height * dpr;
+                canvas.style.width = rect.width + 'px';
+                canvas.style.height = rect.height + 'px';
+
+                const ctx = canvas.getContext('2d');
+                ctx.scale(dpr, dpr);
+
+                const width = rect.width;
+                const height = rect.height;
+                const padRight = 68;
+                const padBottom = 24;
+                const padTop = 16;
+                const chartW = width - padRight;
+                const chartH = height - padBottom - padTop;
+
+                // Clear Background
+                ctx.fillStyle = '#0D1119';
+                ctx.fillRect(0, 0, width, height);
+
+                // Find Price Min & Max
+                let minPrice = Infinity;
+                let maxPrice = -Infinity;
+                candles.forEach(c => {
+                    if (c.low < minPrice) minPrice = c.low;
+                    if (c.high > maxPrice) maxPrice = c.high;
+                });
+                const pricePad = (maxPrice - minPrice) * 0.12 || 1;
+                minPrice -= pricePad;
+                maxPrice += pricePad;
+                const priceRange = maxPrice - minPrice;
+
+                const priceToY = (p) => padTop + chartH - ((p - minPrice) / priceRange) * chartH;
+                const yToPrice = (y) => minPrice + ((padTop + chartH - y) / chartH) * priceRange;
+
+                // Horizontal Grid Lines & Right Axis Price Labels
+                const market = MARKETS[activePair];
+                const gridCount = 5;
+                ctx.strokeStyle = '#19202E';
+                ctx.lineWidth = 1;
+                ctx.font = '10px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#848E9C';
+                ctx.textAlign = 'left';
+
+                for (let i = 0; i <= gridCount; i++) {
+                    const y = padTop + (chartH / gridCount) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(chartW, y);
+                    ctx.stroke();
+
+                    const labelPrice = yToPrice(y);
+                    ctx.fillText(labelPrice.toFixed(market.decimals), chartW + 8, y + 3);
+                }
+
+                // Vertical Grid Lines
+                const stepX = chartW / candles.length;
+                for (let i = 0; i < candles.length; i += 10) {
+                    const x = i * stepX + stepX / 2;
+                    ctx.beginPath();
+                    ctx.moveTo(x, padTop);
+                    ctx.lineTo(x, padTop + chartH);
+                    ctx.stroke();
+
+                    const d = new Date(candles[i].time);
+                    const timeStr = d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+                    ctx.fillText(timeStr, x - 14, height - 7);
+                }
+
+                // Draw Candles or Line Chart
+                if (chartType === 'candle') {
+                    const candleWidth = Math.max(2.5, stepX * 0.64);
+                    candles.forEach((c, i) => {
+                        const xCenter = i * stepX + stepX / 2;
+                        const isBull = c.close >= c.open;
+                        const color = isBull ? '#0ECB81' : '#F6465D';
+
+                        const yHigh = priceToY(c.high);
+                        const yLow = priceToY(c.low);
+                        const yOpen = priceToY(c.open);
+                        const yClose = priceToY(c.close);
+
+                        // Wick
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 1.2;
+                        ctx.beginPath();
+                        ctx.moveTo(xCenter, yHigh);
+                        ctx.lineTo(xCenter, yLow);
+                        ctx.stroke();
+
+                        // Body
+                        ctx.fillStyle = color;
+                        const bodyTop = Math.min(yOpen, yClose);
+                        const bodyHeight = Math.max(1.5, Math.abs(yClose - yOpen));
+                        ctx.fillRect(xCenter - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+                    });
+                } else {
+                    // Smooth Area Line Chart
+                    ctx.beginPath();
+                    candles.forEach((c, i) => {
+                        const x = i * stepX + stepX / 2;
+                        const y = priceToY(c.close);
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    });
+                    ctx.strokeStyle = '#00D2FF';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Gradient Fill
+                    const lastX = (candles.length - 1) * stepX + stepX / 2;
+                    ctx.lineTo(lastX, padTop + chartH);
+                    ctx.lineTo(stepX / 2, padTop + chartH);
+                    ctx.closePath();
+                    const grad = ctx.createLinearGradient(0, padTop, 0, padTop + chartH);
+                    grad.addColorStop(0, 'rgba(0, 210, 255, 0.28)');
+                    grad.addColorStop(1, 'rgba(0, 210, 255, 0.0)');
+                    ctx.fillStyle = grad;
+                    ctx.fill();
+                }
+
+                // Draw Moving Averages (MA7 & MA25)
+                const ma7 = calculateMA(candles, 7);
+                const ma25 = calculateMA(candles, 25);
+
+                drawMALine(ctx, ma7, stepX, priceToY, '#FBBF24');
+                drawMALine(ctx, ma25, stepX, priceToY, '#C084FC');
+
+                // Update MA Legend
+                const lastMa7 = ma7[ma7.length - 1];
+                const lastMa25 = ma25[ma25.length - 1];
+                document.getElementById('legend-ma7').textContent = lastMa7 ? lastMa7.toFixed(market.decimals) : '--';
+                document.getElementById('legend-ma25').textContent = lastMa25 ? lastMa25.toFixed(market.decimals) : '--';
+
+                // Current Live Price Dashed Line & Badge
+                const lastCandle = candles[candles.length - 1];
+                const liveY = priceToY(lastCandle.close);
+                const isUp = lastCandle.close >= lastCandle.open;
+                const liveColor = isUp ? '#0ECB81' : '#F6465D';
+
+                ctx.save();
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = liveColor;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, liveY);
+                ctx.lineTo(chartW, liveY);
+                ctx.stroke();
+                ctx.restore();
+
+                // Right Axis Live Price Tag
+                ctx.fillStyle = liveColor;
+                ctx.fillRect(chartW + 2, liveY - 9, padRight - 4, 18);
+                ctx.fillStyle = '#0B0E14';
+                ctx.font = 'bold 10px "JetBrains Mono", monospace';
+                ctx.fillText(lastCandle.close.toFixed(market.decimals), chartW + 6, liveY + 3.5);
+
+                // Crosshair on Mouse Hover
+                let hoveredCandle = lastCandle;
+                if (mousePos && mousePos.x < chartW && mousePos.y >= padTop && mousePos.y <= padTop + chartH) {
+                    const idx = Math.min(candles.length - 1, Math.max(0, Math.floor(mousePos.x / stepX)));
+                    hoveredCandle = candles[idx];
+                    const snapX = idx * stepX + stepX / 2;
+
+                    ctx.save();
+                    ctx.setLineDash([3, 3]);
+                    ctx.strokeStyle = '#64748B';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(snapX, padTop);
+                    ctx.lineTo(snapX, padTop + chartH);
+                    ctx.moveTo(0, mousePos.y);
+                    ctx.lineTo(chartW, mousePos.y);
+                    ctx.stroke();
+                    ctx.restore();
+
+                    // Hover Price Badge
+                    const hoverPrice = yToPrice(mousePos.y);
+                    ctx.fillStyle = '#2663EB';
+                    ctx.fillRect(chartW + 2, mousePos.y - 9, padRight - 4, 18);
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillText(hoverPrice.toFixed(market.decimals), chartW + 6, mousePos.y + 3.5);
+                }
+
+                // Update OHLC Top Bar
+                document.getElementById('ohlc-o').textContent = hoveredCandle.open.toFixed(market.decimals);
+                document.getElementById('ohlc-h').textContent = hoveredCandle.high.toFixed(market.decimals);
+                document.getElementById('ohlc-l').textContent = hoveredCandle.low.toFixed(market.decimals);
+                document.getElementById('ohlc-c').textContent = hoveredCandle.close.toFixed(market.decimals);
+            }
+
+            function drawMALine(ctx, maData, stepX, priceToY, color) {
+                ctx.beginPath();
+                let started = false;
+                maData.forEach((val, i) => {
+                    if (val === null) return;
+                    const x = i * stepX + stepX / 2;
+                    const y = priceToY(val);
+                    if (!started) {
+                        ctx.moveTo(x, y);
+                        started = true;
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1.3;
+                ctx.stroke();
+            }
+
+            // -----------------------------------------------------------------
+            // 7. ORDER BOOK & RECENT TRADES RENDERING
+            // -----------------------------------------------------------------
+            function updateOrderBookAndTrades() {
+                const market = MARKETS[activePair];
+                const midPrice = market.price;
+                const dec = market.decimals;
+                const amtDec = market.amountDecimals;
+                const tick = Math.pow(10, -dec) * (midPrice > 1000 ? 50 : midPrice > 10 ? 5 : 2);
+
+                // Generate 8 Asks (above midPrice)
+                const asksEl = document.getElementById('orderbook-asks');
+                let asksHtml = '';
+                const asksRows = [];
+                for (let i = 8; i >= 1; i--) {
+                    const p = midPrice + i * tick + (Math.random() * tick * 0.4);
+                    const sz = (Math.random() * 2.4 + 0.08).toFixed(amtDec);
+                    const depthPct = Math.min(100, Math.floor(Math.random() * 85 + 10));
+                    asksRows.push({ p, sz, depthPct });
+                }
+                asksRows.forEach(r => {
+                    asksHtml += `
+                        <div class="relative grid grid-cols-3 py-0.5 px-1 rounded hover:bg-bingx-card cursor-pointer ob-price-row" data-price="${r.p.toFixed(dec)}">
+                            <div class="absolute right-0 top-0 bottom-0 bg-bingx-redBg pointer-events-none transition-all duration-300" style="width: ${r.depthPct}%"></div>
+                            <span class="text-bingx-red z-10">${r.p.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec })}</span>
+                            <span class="text-right text-bingx-text z-10">${r.sz}</span>
+                            <span class="text-right text-bingx-muted z-10">${(r.p * parseFloat(r.sz)).toFixed(0)}</span>
+                        </div>
+                    `;
+                });
+                asksEl.innerHTML = asksHtml;
+
+                // Generate 8 Bids (below midPrice)
+                const bidsEl = document.getElementById('orderbook-bids');
+                let bidsHtml = '';
+                for (let i = 1; i <= 8; i++) {
+                    const p = midPrice - i * tick - (Math.random() * tick * 0.4);
+                    const sz = (Math.random() * 2.4 + 0.08).toFixed(amtDec);
+                    const depthPct = Math.min(100, Math.floor(Math.random() * 85 + 10));
+                    bidsHtml += `
+                        <div class="relative grid grid-cols-3 py-0.5 px-1 rounded hover:bg-bingx-card cursor-pointer ob-price-row" data-price="${p.toFixed(dec)}">
+                            <div class="absolute right-0 top-0 bottom-0 bg-bingx-greenBg pointer-events-none transition-all duration-300" style="width: ${depthPct}%"></div>
+                            <span class="text-bingx-green z-10">${p.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec })}</span>
+                            <span class="text-right text-bingx-text z-10">${sz}</span>
+                            <span class="text-right text-bingx-muted z-10">${(p * parseFloat(sz)).toFixed(0)}</span>
+                        </div>
+                    `;
+                }
+                bidsEl.innerHTML = bidsHtml;
+
+                // Click on Order Book row fills Limit Price inputs
+                document.querySelectorAll('.ob-price-row').forEach(row => {
+                    row.addEventListener('click', () => {
+                        const clickedPrice = row.getAttribute('data-price');
+                        if (orderType === 'Limit') {
+                            document.getElementById('buy-price-input').value = clickedPrice;
+                            document.getElementById('sell-price-input').value = clickedPrice;
+                            recalcOrderTotals();
+                        }
+                    });
+                });
+
+                // Add a new simulated trade
+                const isBuyTrade = Math.random() > 0.48;
+                const tradeAmt = (Math.random() * 1.15 + 0.005).toFixed(amtDec);
+                const nowStr = new Date().toTimeString().split(' ')[0];
+                recentTrades.unshift({
+                    price: midPrice.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }),
+                    amount: tradeAmt,
+                    time: nowStr,
+                    isBuy: isBuyTrade
+                });
+                if (recentTrades.length > 16) recentTrades.pop();
+
+                const tradesEl = document.getElementById('recent-trades-list');
+                tradesEl.innerHTML = recentTrades.map(t => `
+                    <div class="grid grid-cols-3 py-0.5 px-1">
+                        <span class="${t.isBuy ? 'text-bingx-green' : 'text-bingx-red'}">${t.price}</span>
+                        <span class="text-right text-bingx-text">${t.amount}</span>
+                        <span class="text-right text-bingx-muted">${t.time}</span>
+                    </div>
+                `).join('');
+            }
+
+            // -----------------------------------------------------------------
+            // 8. UI SYNCHRONIZATION (TICKERS, BALANCES, TABLES)
+            // -----------------------------------------------------------------
+            function updateTickerHeader() {
+                const market = MARKETS[activePair];
+                const dec = market.decimals;
+                const isUp = market.price >= market.prevPrice;
+                const colorClass = isUp ? 'text-bingx-green' : 'text-bingx-red';
+
+                document.getElementById('active-pair-name').textContent = activePair;
+                document.getElementById('active-coin-fullname').textContent = market.name;
+                const iconEl = document.getElementById('active-coin-icon');
+                iconEl.textContent = market.icon;
+                iconEl.className = `w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${market.iconBg}`;
+
+                const formattedPrice = market.price.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+                const formattedIdrPrice = formatIDR(market.price * USD_TO_IDR);
+
+                const tickerPriceEl = document.getElementById('ticker-price');
+                tickerPriceEl.textContent = currencyDisplayMode === 'IDR' ? formattedIdrPrice : formattedPrice;
+                tickerPriceEl.className = `text-lg sm:text-xl font-mono font-bold leading-tight ${colorClass}`;
+
+                const obMidEl = document.getElementById('ob-mid-price');
+                obMidEl.textContent = formattedPrice;
+                obMidEl.className = `text-sm font-mono font-bold ${colorClass}`;
+
+                document.getElementById('ticker-usd-sub').innerHTML = `≈ $${formattedPrice} | <span class="text-bingx-cyan">${formattedIdrPrice}</span>`;
+                
+                const changeEl = document.getElementById('ticker-change');
+                const sign = market.change24h >= 0 ? '+' : '';
+                changeEl.textContent = `${sign}${market.change24h.toFixed(2)}%`;
+                changeEl.className = `font-mono font-semibold mt-0.5 ${market.change24h >= 0 ? 'text-bingx-green' : 'text-bingx-red'}`;
+
+                document.getElementById('ticker-high').textContent = market.high24h.toLocaleString('en-US', { minimumFractionDigits: dec });
+                document.getElementById('ticker-low').textContent = market.low24h.toLocaleString('en-US', { minimumFractionDigits: dec });
+                document.getElementById('ticker-vol-coin').textContent = market.base;
+                document.getElementById('ticker-vol').textContent = market.vol24h.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+                document.querySelectorAll('.pair-base-label').forEach(el => {
+                    el.textContent = market.base;
+                });
+            }
+
+            function updateBalancesAndTables() {
+                const market = MARKETS[activePair];
+                const baseCoin = market.base;
+                const usdtBal = portfolio.balances.USDT || 0;
+                const coinBal = portfolio.balances[baseCoin] || 0;
+
+                // Top Navbar Equity (Total Portfolio Value in USDT)
+                let totalEquity = usdtBal + (portfolio.locked.USDT || 0);
+                Object.keys(MARKETS).forEach(pKey => {
+                    const b = MARKETS[pKey].base;
+                    const qty = (portfolio.balances[b] || 0) + (portfolio.locked[b] || 0);
+                    totalEquity += qty * MARKETS[pKey].price;
+                });
+
+                document.getElementById('nav-usdt-balance').textContent = totalEquity.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('nav-idr-balance').textContent = `≈ ${formatIDR(totalEquity * USD_TO_IDR)}`;
+                document.getElementById('avail-usdt-buy').textContent = `${usdtBal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${formatIDR(usdtBal * USD_TO_IDR)})`;
+                document.getElementById('avail-coin-sell').textContent = coinBal.toFixed(market.amountDecimals);
+
+                // Render Open Orders
+                const openTbody = document.getElementById('open-orders-tbody');
+                const noOpenMsg = document.getElementById('no-open-orders');
+                document.getElementById('open-orders-count').textContent = portfolio.openOrders.length;
+
+                if (portfolio.openOrders.length === 0) {
+                    openTbody.innerHTML = '';
+                    noOpenMsg.classList.remove('hidden');
+                } else {
+                    noOpenMsg.classList.add('hidden');
+                    openTbody.innerHTML = portfolio.openOrders.map(ord => `
+                        <tr class="hover:bg-bingx-card/50">
+                            <td class="py-2.5 text-bingx-muted">${ord.time}</td>
+                            <td class="py-2.5 font-semibold text-white">${ord.pair}</td>
+                            <td class="py-2.5 text-bingx-muted">${ord.type}</td>
+                            <td class="py-2.5 font-bold ${ord.side === 'BUY' ? 'text-bingx-green' : 'text-bingx-red'}">${ord.side}</td>
+                            <td class="py-2.5 text-white">$${ord.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                            <td class="py-2.5 text-white">${ord.amount}</td>
+                            <td class="py-2.5 text-white">
+                                <div>$${ord.total.toFixed(2)}</div>
+                                <div class="text-[10px] text-bingx-cyan">${formatIDR(ord.total * USD_TO_IDR)}</div>
+                            </td>
+                            <td class="py-2.5 text-right">
+                                <button class="cancel-order-btn px-2.5 py-1 rounded bg-bingx-redBg hover:bg-bingx-red text-bingx-red hover:text-white text-[11px] font-sans font-semibold transition cursor-pointer" data-id="${ord.id}">Cancel</button>
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    document.querySelectorAll('.cancel-order-btn').forEach(btn => {
+                        btn.addEventListener('click', () => cancelOpenOrder(btn.getAttribute('data-id')));
+                    });
+                }
+
+                // Render Order History (Filtered by Month)
+                const histTbody = document.getElementById('order-history-tbody');
+                const filteredHistory = selectedHistoryMonth === 'ALL'
+                    ? portfolio.orderHistory
+                    : portfolio.orderHistory.filter(item => String(item.month) === String(selectedHistoryMonth));
+
+                document.getElementById('order-history-count').textContent = filteredHistory.length;
+
+                // Hitung Total Realized PnL untuk periode terpilih
+                let totalPnlIdr = 0;
+                filteredHistory.forEach(item => {
+                    totalPnlIdr += (item.pnlIdr || 0);
+                });
+                const totalPnlUsd = totalPnlIdr / USD_TO_IDR;
+                const pnlIdrEl = document.getElementById('filtered-pnl-idr');
+                const pnlUsdEl = document.getElementById('filtered-pnl-usd');
+                pnlIdrEl.textContent = formatIDR(totalPnlIdr, true);
+                pnlIdrEl.className = `font-bold ${totalPnlIdr >= 0 ? 'text-bingx-green' : 'text-bingx-red'}`;
+                pnlUsdEl.textContent = `(${formatUSD(totalPnlUsd, true)})`;
+
+                histTbody.innerHTML = filteredHistory.map(ord => {
+                    const pnlIdr = ord.pnlIdr || 0;
+                    const pnlUsd = ord.pnlUsd || (pnlIdr / USD_TO_IDR);
+                    const isLoss = pnlIdr < 0;
+                    const rowHighlight = ord.id === 'HIS-12JUN-LOSS' ? 'bg-bingx-redBg/30' : 'hover:bg-bingx-card/50';
+                    return `
+                        <tr class="${rowHighlight}">
+                            <td class="py-2.5 text-bingx-muted whitespace-nowrap">${ord.time}</td>
+                            <td class="py-2.5 font-semibold text-white">${ord.pair}</td>
+                            <td class="py-2.5 font-bold ${ord.side === 'BUY' ? 'text-bingx-green' : 'text-bingx-red'}">${ord.side} <span class="text-[10px] font-normal text-bingx-muted">(${ord.type})</span></td>
+                            <td class="py-2.5 text-white">$${ord.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                            <td class="py-2.5 text-white">${ord.amount}</td>
+                            <td class="py-2.5">
+                                <div class="text-white">$${ord.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                <div class="text-[10px] text-bingx-muted">${formatIDR(ord.total * USD_TO_IDR)}</div>
+                            </td>
+                            <td class="py-2.5 font-semibold ${isLoss ? 'text-bingx-red' : 'text-bingx-green'}">
+                                <div>${formatIDR(pnlIdr, true)}</div>
+                                <div class="text-[10px] opacity-85">${formatUSD(pnlUsd, true)}</div>
+                            </td>
+                            <td class="py-2.5 text-right">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-sans font-semibold ${isLoss ? 'bg-bingx-redBg text-bingx-red' : (ord.status === 'Filled' ? 'bg-bingx-greenBg text-bingx-green' : 'bg-bingx-card text-bingx-muted')}">${ord.status}</span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Render Wallet Transfers History
+                const transferTbody = document.getElementById('wallet-transfers-tbody');
+                document.getElementById('wallet-transfers-count').textContent = WALLET_TRANSFERS.length;
+                transferTbody.innerHTML = WALLET_TRANSFERS.map(tr => `
+                    <tr class="hover:bg-bingx-card/50">
+                        <td class="py-3 text-bingx-muted whitespace-nowrap">${tr.date}</td>
+                        <td class="py-3 font-sans font-semibold text-white">${tr.type}</td>
+                        <td class="py-3">
+                            <div class="text-bingx-cyan text-[11px]">${tr.wallet}</div>
+                            <div class="text-[10px] text-bingx-muted">${tr.network}</div>
+                        </td>
+                        <td class="py-3 font-bold text-white">${formatIDR(tr.amountIdr)}</td>
+                        <td class="py-3 text-bingx-cyan">$${tr.amountUsdt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT</td>
+                        <td class="py-3 text-bingx-muted text-[11px]">${tr.txHash}</td>
+                        <td class="py-3 text-right">
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-sans font-semibold bg-bingx-greenBg text-bingx-green border border-bingx-green/30">
+                                ✓ ${tr.status}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Render Assets / Portfolio Table
+                const assetsTbody = document.getElementById('assets-tbody');
+                const assetKeys = ['USDT', 'BTC', 'ETH', 'SOL', 'TON'];
+                assetsTbody.innerHTML = assetKeys.map(sym => {
+                    const avail = portfolio.balances[sym] || 0;
+                    const locked = portfolio.locked[sym] || 0;
+                    const priceUsdt = sym === 'USDT' ? 1.00 : MARKETS[`${sym}/USDT`].price;
+                    const estValue = (avail + locked) * priceUsdt;
+                    return `
+                        <tr class="hover:bg-bingx-card/50">
+                            <td class="py-2.5 font-sans font-bold text-white">${sym}</td>
+                            <td class="py-2.5 text-white">${avail.toFixed(sym === 'USDT' ? 2 : 4)}</td>
+                            <td class="py-2.5 text-bingx-muted">${locked.toFixed(sym === 'USDT' ? 2 : 4)}</td>
+                            <td class="py-2.5">
+                                <div class="text-white">$${priceUsdt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</div>
+                                <div class="text-[10px] text-bingx-muted">${formatIDR(priceUsdt * USD_TO_IDR)}</div>
+                            </td>
+                            <td class="py-2.5 text-right font-semibold">
+                                <div class="text-bingx-cyan">$${estValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                <div class="text-[10px] text-bingx-green">${formatIDR(estValue * USD_TO_IDR)}</div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // -----------------------------------------------------------------
+            // 9. ORDER EXECUTION & MATCHING ENGINE
+            // -----------------------------------------------------------------
+            function syncOrderInputsToMarket() {
+                const market = MARKETS[activePair];
+                const pStr = market.price.toFixed(market.decimals);
+                const buyPriceEl = document.getElementById('buy-price-input');
+                const sellPriceEl = document.getElementById('sell-price-input');
+
+                if (orderType === 'Market') {
+                    buyPriceEl.value = pStr;
+                    sellPriceEl.value = pStr;
+                    buyPriceEl.disabled = true;
+                    sellPriceEl.disabled = true;
+                    buyPriceEl.classList.add('text-bingx-muted');
+                    sellPriceEl.classList.add('text-bingx-muted');
+                } else {
+                    buyPriceEl.disabled = false;
+                    sellPriceEl.disabled = false;
+                    buyPriceEl.classList.remove('text-bingx-muted');
+                    sellPriceEl.classList.remove('text-bingx-muted');
+                    if (!buyPriceEl.value) buyPriceEl.value = pStr;
+                    if (!sellPriceEl.value) sellPriceEl.value = pStr;
+                }
+                recalcOrderTotals();
+            }
+
+            function recalcOrderTotals() {
+                const buyP = parseFloat(document.getElementById('buy-price-input').value) || 0;
+                const buyA = parseFloat(document.getElementById('buy-amount-input').value) || 0;
+                const buyTotal = buyP * buyA;
+                document.getElementById('buy-total-usdt').textContent = buyTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('buy-total-idr').textContent = formatIDR(buyTotal * USD_TO_IDR);
+
+                const sellP = parseFloat(document.getElementById('sell-price-input').value) || 0;
+                const sellA = parseFloat(document.getElementById('sell-amount-input').value) || 0;
+                const sellTotal = sellP * sellA;
+                document.getElementById('sell-total-usdt').textContent = sellTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('sell-total-idr').textContent = formatIDR(sellTotal * USD_TO_IDR);
+            }
+
+            function executeOrder(side) {
+                const market = MARKETS[activePair];
+                const baseCoin = market.base;
+                const nowStr = '14 Nov 2026, ' + new Date().toTimeString().split(' ')[0];
+
+                const priceInput = document.getElementById(side === 'BUY' ? 'buy-price-input' : 'sell-price-input');
+                const amountInput = document.getElementById(side === 'BUY' ? 'buy-amount-input' : 'sell-amount-input');
+
+                const execPrice = orderType === 'Market' ? market.price : parseFloat(priceInput.value);
+                const amount = parseFloat(amountInput.value);
+
+                if (!execPrice || execPrice <= 0 || !amount || amount <= 0) {
+                    showToast('Input Tidak Valid', 'Masukkan harga dan jumlah koin yang valid.', 'error');
+                    return;
+                }
+
+                const totalUsdt = execPrice * amount;
+
+                if (side === 'BUY') {
+                    if (totalUsdt > portfolio.balances.USDT) {
+                        showToast('Saldo USDT Tidak Cukup', `Dibutuhkan ${totalUsdt.toFixed(2)} USDT, tersedia ${portfolio.balances.USDT.toFixed(2)} USDT.`, 'error');
+                        return;
+                    }
+
+                    // Immediate execution if Market OR Limit Buy Price >= Current Market Price
+                    if (orderType === 'Market' || execPrice >= market.price) {
+                        portfolio.balances.USDT -= totalUsdt;
+                        portfolio.balances[baseCoin] = (portfolio.balances[baseCoin] || 0) + amount;
+                        portfolio.orderHistory.unshift({
+                            id: 'ORD-' + Math.floor(10000 + Math.random() * 90000),
+                            month: 11,
+                            time: nowStr,
+                            pair: activePair,
+                            type: orderType,
+                            side: 'BUY',
+                            price: execPrice,
+                            amount: amount,
+                            total: totalUsdt,
+                            pnlIdr: 0,
+                            pnlUsd: 0,
+                            status: 'Filled'
+                        });
+                        showToast('Order Buy Berhasil Dieksekusi', `Membeli ${amount} ${baseCoin} @ $${execPrice.toLocaleString()} (${formatIDR(totalUsdt * USD_TO_IDR)})`, 'success');
+                    } else {
+                        // Place into Open Limit Orders
+                        portfolio.balances.USDT -= totalUsdt;
+                        portfolio.locked.USDT = (portfolio.locked.USDT || 0) + totalUsdt;
+                        portfolio.openOrders.unshift({
+                            id: 'ORD-' + Math.floor(10000 + Math.random() * 90000),
+                            time: nowStr,
+                            pair: activePair,
+                            type: 'Limit',
+                            side: 'BUY',
+                            price: execPrice,
+                            amount: amount,
+                            total: totalUsdt
+                        });
+                        showToast('Limit Buy Order Dipasang', `Menunggu harga ${baseCoin} turun ke $${execPrice.toLocaleString()}`, 'info');
+                    }
+                } else {
+                    // SELL SIDE
+                    const availCoin = portfolio.balances[baseCoin] || 0;
+                    if (amount > availCoin) {
+                        showToast(`Saldo ${baseCoin} Tidak Cukup`, `Tersedia ${availCoin.toFixed(market.amountDecimals)} ${baseCoin}.`, 'error');
+                        return;
+                    }
+
+                    // Immediate execution if Market OR Limit Sell Price <= Current Market Price
+                    if (orderType === 'Market' || execPrice <= market.price) {
+                        portfolio.balances[baseCoin] -= amount;
+                        portfolio.balances.USDT += totalUsdt;
+                        portfolio.orderHistory.unshift({
+                            id: 'ORD-' + Math.floor(10000 + Math.random() * 90000),
+                            month: 11,
+                            time: nowStr,
+                            pair: activePair,
+                            type: orderType,
+                            side: 'SELL',
+                            price: execPrice,
+                            amount: amount,
+                            total: totalUsdt,
+                            pnlIdr: 0,
+                            pnlUsd: 0,
+                            status: 'Filled'
+                        });
+                        showToast('Order Sell Berhasil Dieksekusi', `Menjual ${amount} ${baseCoin} @ $${execPrice.toLocaleString()} (+${formatIDR(totalUsdt * USD_TO_IDR)})`, 'success');
+                    } else {
+                        // Place into Open Limit Orders
+                        portfolio.balances[baseCoin] -= amount;
+                        portfolio.locked[baseCoin] = (portfolio.locked[baseCoin] || 0) + amount;
+                        portfolio.openOrders.unshift({
+                            id: 'ORD-' + Math.floor(10000 + Math.random() * 90000),
+                            time: nowStr,
+                            pair: activePair,
+                            type: 'Limit',
+                            side: 'SELL',
+                            price: execPrice,
+                            amount: amount,
+                            total: totalUsdt
+                        });
+                        showToast('Limit Sell Order Dipasang', `Menunggu harga ${baseCoin} naik ke $${execPrice.toLocaleString()}`, 'info');
+                    }
+                }
+
+                amountInput.value = '';
+                recalcOrderTotals();
+                savePortfolio();
+                updateBalancesAndTables();
+            }
+
+            function cancelOpenOrder(orderId) {
+                const idx = portfolio.openOrders.findIndex(o => o.id === orderId);
+                if (idx === -1) return;
+                const ord = portfolio.openOrders[idx];
+                const baseCoin = ord.pair.split('/')[0];
+
+                if (ord.side === 'BUY') {
+                    portfolio.locked.USDT = Math.max(0, (portfolio.locked.USDT || 0) - ord.total);
+                    portfolio.balances.USDT += ord.total;
+                } else {
+                    portfolio.locked[baseCoin] = Math.max(0, (portfolio.locked[baseCoin] || 0) - ord.amount);
+                    portfolio.balances[baseCoin] += ord.amount;
+                }
+
+                portfolio.openOrders.splice(idx, 1);
+                portfolio.orderHistory.unshift({
+                    ...ord,
+                    status: 'Canceled'
+                });
+
+                savePortfolio();
+                updateBalancesAndTables();
+                showToast('Order Dibatalkan', `Order ${ord.side} ${ord.pair} telah dibatalkan dan dana dikembalikan.`, 'info');
+            }
+
+            // Check if live market ticks trigger any Open Limit Orders
+            function checkOpenLimitOrders() {
+                if (portfolio.openOrders.length === 0) return;
+                let triggered = false;
+
+                for (let i = portfolio.openOrders.length - 1; i >= 0; i--) {
+                    const ord = portfolio.openOrders[i];
+                    const market = MARKETS[ord.pair];
+                    if (!market) continue;
+                    const baseCoin = market.base;
+
+                    if (ord.side === 'BUY' && market.price <= ord.price) {
+                        portfolio.locked.USDT = Math.max(0, (portfolio.locked.USDT || 0) - ord.total);
+                        portfolio.balances[baseCoin] = (portfolio.balances[baseCoin] || 0) + ord.amount;
+                        portfolio.openOrders.splice(i, 1);
+                        portfolio.orderHistory.unshift({ ...ord, status: 'Filled' });
+                        showToast('Limit Buy Terpenuhi!', `${ord.amount} ${baseCoin} tereksekusi @ $${ord.price}`, 'success');
+                        triggered = true;
+                    } else if (ord.side === 'SELL' && market.price >= ord.price) {
+                        portfolio.locked[baseCoin] = Math.max(0, (portfolio.locked[baseCoin] || 0) - ord.amount);
+                        portfolio.balances.USDT += ord.total;
+                        portfolio.openOrders.splice(i, 1);
+                        portfolio.orderHistory.unshift({ ...ord, status: 'Filled' });
+                        showToast('Limit Sell Terpenuhi!', `${ord.amount} ${baseCoin} terjual @ $${ord.price}`, 'success');
+                        triggered = true;
+                    }
+                }
+
+                if (triggered) {
+                    savePortfolio();
+                    updateBalancesAndTables();
+                }
+            }
+
+            // -----------------------------------------------------------------
+            // 10. REAL-TIME SIMULATION LOOP (EVERY 1.4 SECONDS)
+            // -----------------------------------------------------------------
+            function tickMarketSimulation() {
+                Object.keys(MARKETS).forEach(pairKey => {
+                    const m = MARKETS[pairKey];
+                    m.prevPrice = m.price;
+                    const delta = (Math.random() - 0.495) * m.volatility;
+                    m.price = Math.max(0.01, m.price + delta);
+                    if (m.price > m.high24h) m.high24h = m.price;
+                    if (m.price < m.low24h) m.low24h = m.price;
+                    m.vol24h += Math.random() * 2.5;
+                });
+
+                // Update latest candle on active chart
+                const activeM = MARKETS[activePair];
+                if (candles.length > 0) {
+                    const last = candles[candles.length - 1];
+                    last.close = activeM.price;
+                    if (activeM.price > last.high) last.high = activeM.price;
+                    if (activeM.price < last.low) last.low = activeM.price;
+
+                    // Periodically push a new candle
+                    if (Math.random() > 0.86) {
+                        candles.push({
+                            time: Date.now(),
+                            open: activeM.price,
+                            high: activeM.price,
+                            low: activeM.price,
+                            close: activeM.price,
+                            volume: 10
+                        });
+                        if (candles.length > 75) candles.shift();
+                    }
+                }
+
+                if (orderType === 'Market') {
+                    const pStr = activeM.price.toFixed(activeM.decimals);
+                    document.getElementById('buy-price-input').value = pStr;
+                    document.getElementById('sell-price-input').value = pStr;
+                    recalcOrderTotals();
+                }
+
+                checkOpenLimitOrders();
+                updateTickerHeader();
+                updateOrderBookAndTrades();
+                updateBalancesAndTables();
+                renderChart();
+            }
+
+            // -----------------------------------------------------------------
+            // 11. TERMINAL INITIALIZATION & EVENT LISTENERS
+            // -----------------------------------------------------------------
+            function switchPair(newPair) {
+                activePair = newPair;
+                const m = MARKETS[activePair];
+                candles = generateInitialCandles(activePair, 65);
+                recentTrades = [];
+                document.getElementById('buy-price-input').value = m.price.toFixed(m.decimals);
+                document.getElementById('sell-price-input').value = m.price.toFixed(m.decimals);
+                document.getElementById('buy-amount-input').value = '';
+                document.getElementById('sell-amount-input').value = '';
+                syncOrderInputsToMarket();
+                updateTickerHeader();
+                updateOrderBookAndTrades();
+                updateBalancesAndTables();
+                renderChart();
+            }
+
+            function renderPairDropdown() {
+                const listEl = document.getElementById('pair-options-list');
+                listEl.innerHTML = Object.keys(MARKETS).map(key => {
+                    const m = MARKETS[key];
+                    return `
+                        <button type="button" class="pair-option-item w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-bingx-panel text-left transition cursor-pointer" data-pair="${key}">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${m.iconBg}">${m.icon}</span>
+                                <div>
+                                    <div class="text-xs font-bold text-white">${key}</div>
+                                    <div class="text-[10px] text-bingx-muted">${m.name}</div>
+                                </div>
+                            </div>
+                            <div class="text-right font-mono">
+                                <div class="text-xs text-white">$${m.price.toLocaleString()}</div>
+                                <div class="text-[10px] ${m.change24h >= 0 ? 'text-bingx-green' : 'text-bingx-red'}">${m.change24h >= 0 ? '+' : ''}${m.change24h}%</div>
+                            </div>
+                        </button>
+                    `;
+                }).join('');
+
+                document.querySelectorAll('.pair-option-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        switchPair(btn.getAttribute('data-pair'));
+                        document.getElementById('pair-dropdown').classList.add('hidden');
+                    });
+                });
+            }
+
+            function initTerminal() {
+                renderPairDropdown();
+                switchPair(activePair);
+
+                // Pair Dropdown Toggle
+                const pairBtn = document.getElementById('pair-selector-btn');
+                const pairDrop = document.getElementById('pair-dropdown');
+                pairBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    renderPairDropdown();
+                    pairDrop.classList.toggle('hidden');
+                });
+                document.addEventListener('click', () => pairDrop.classList.add('hidden'));
+
+                // Timeframe Buttons
+                document.querySelectorAll('.tf-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.tf-btn').forEach(b => {
+                            b.classList.remove('bg-bingx-card', 'text-bingx-cyan', 'font-semibold');
+                            b.classList.add('text-bingx-muted');
+                        });
+                        btn.classList.add('bg-bingx-card', 'text-bingx-cyan', 'font-semibold');
+                        btn.classList.remove('text-bingx-muted');
+                        activeTimeframe = btn.getAttribute('data-tf');
+                        candles = generateInitialCandles(activePair, 65);
+                        renderChart();
+                    });
+                });
+
+                // Chart Type Switch (Candles vs Line)
+                const btnCandle = document.getElementById('chart-type-candle');
+                const btnLine = document.getElementById('chart-type-line');
+                btnCandle.addEventListener('click', () => {
+                    chartType = 'candle';
+                    btnCandle.className = 'px-2.5 py-1 rounded-md bg-bingx-card text-white font-medium transition';
+                    btnLine.className = 'px-2.5 py-1 rounded-md text-bingx-muted hover:text-white transition';
+                    renderChart();
+                });
+                btnLine.addEventListener('click', () => {
+                    chartType = 'line';
+                    btnLine.className = 'px-2.5 py-1 rounded-md bg-bingx-card text-white font-medium transition';
+                    btnCandle.className = 'px-2.5 py-1 rounded-md text-bingx-muted hover:text-white transition';
+                    renderChart();
+                });
+
+                // Canvas Crosshair Events
+                const canvas = document.getElementById('trading-chart');
+                canvas.addEventListener('mousemove', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    mousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                    renderChart();
+                });
+                canvas.addEventListener('mouseleave', () => {
+                    mousePos = null;
+                    renderChart();
+                });
+
+                // Order Type Tabs (Limit / Market)
+                const tabLimit = document.getElementById('order-type-limit');
+                const tabMarket = document.getElementById('order-type-market');
+                tabLimit.addEventListener('click', () => {
+                    orderType = 'Limit';
+                    tabLimit.className = 'order-type-tab text-white border-b-2 border-bingx-blue pb-2 -mb-[11px] cursor-pointer';
+                    tabMarket.className = 'order-type-tab text-bingx-muted hover:text-white pb-2 -mb-[11px] cursor-pointer';
+                    syncOrderInputsToMarket();
+                });
+                tabMarket.addEventListener('click', () => {
+                    orderType = 'Market';
+                    tabMarket.className = 'order-type-tab text-white border-b-2 border-bingx-blue pb-2 -mb-[11px] cursor-pointer';
+                    tabLimit.className = 'order-type-tab text-bingx-muted hover:text-white pb-2 -mb-[11px] cursor-pointer';
+                    syncOrderInputsToMarket();
+                });
+
+                // Recalc Totals on Input Change
+                ['buy-price-input', 'buy-amount-input', 'sell-price-input', 'sell-amount-input'].forEach(id => {
+                    document.getElementById(id).addEventListener('input', recalcOrderTotals);
+                });
+
+                // Buy Percentage Buttons
+                document.querySelectorAll('.buy-pct-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const pct = parseFloat(btn.getAttribute('data-pct'));
+                        const price = parseFloat(document.getElementById('buy-price-input').value) || MARKETS[activePair].price;
+                        const maxCoin = (portfolio.balances.USDT * pct) / price;
+                        document.getElementById('buy-amount-input').value = maxCoin.toFixed(MARKETS[activePair].amountDecimals);
+                        recalcOrderTotals();
+                    });
+                });
+
+                // Sell Percentage Buttons
+                document.querySelectorAll('.sell-pct-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const pct = parseFloat(btn.getAttribute('data-pct'));
+                        const baseCoin = MARKETS[activePair].base;
+                        const coinQty = (portfolio.balances[baseCoin] || 0) * pct;
+                        document.getElementById('sell-amount-input').value = coinQty.toFixed(MARKETS[activePair].amountDecimals);
+                        recalcOrderTotals();
+                    });
+                });
+
+                // Execute Buy / Sell Buttons
+                document.getElementById('execute-buy-btn').addEventListener('click', () => executeOrder('BUY'));
+                document.getElementById('execute-sell-btn').addEventListener('click', () => executeOrder('SELL'));
+
+                // Bottom Panel Tabs Switch
+                document.querySelectorAll('.bottom-tab-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.bottom-tab-btn').forEach(b => {
+                            b.classList.remove('tab-active-blue');
+                            b.classList.add('text-bingx-muted');
+                        });
+                        btn.classList.add('tab-active-blue');
+                        btn.classList.remove('text-bingx-muted');
+
+                        const target = btn.getAttribute('data-tab');
+                        document.querySelectorAll('.bottom-tab-content').forEach(c => c.classList.add('hidden'));
+                        document.getElementById(`tab-${target}`).classList.remove('hidden');
+                    });
+                });
+
+                // Top Nav Mode Visual Switch
+                document.querySelectorAll('.nav-mode-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.nav-mode-btn').forEach(b => {
+                            b.className = 'nav-mode-btn px-3 py-2 rounded-lg text-bingx-muted hover:text-white transition flex items-center gap-1.5';
+                        });
+                        btn.className = 'nav-mode-btn px-3 py-2 rounded-lg bg-bingx-card text-white font-semibold border border-bingx-border/80 flex items-center gap-1.5';
+                        showToast(`Mode ${btn.getAttribute('data-mode')}`, `Beralih ke tampilan terminal ${btn.getAttribute('data-mode')}.`, 'info');
+                    });
+                });
+
+                // Reset Demo Balance Button
+                document.getElementById('reset-demo-btn').addEventListener('click', () => {
+                    portfolio = JSON.parse(JSON.stringify(DEFAULT_PORTFOLIO));
+                    savePortfolio();
+                    updateBalancesAndTables();
+                    showToast('Data Direset', 'Saldo demo dan riwayat transaksi Jan - Nov 2026 dikembalikan ke kondisi awal.', 'info');
+                });
+
+                // Filter Bulan pada Order History
+                document.getElementById('history-month-filter').addEventListener('change', (e) => {
+                    selectedHistoryMonth = e.target.value;
+                    updateBalancesAndTables();
+                });
+
+                // Currency Display Toggle (USD+IDR / IDR Only)
+                document.querySelectorAll('.curr-toggle-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.curr-toggle-btn').forEach(b => {
+                            b.className = 'curr-toggle-btn px-2 py-1 rounded-lg text-bingx-muted hover:text-white transition cursor-pointer';
+                        });
+                        btn.className = 'curr-toggle-btn px-2 py-1 rounded-lg bg-bingx-card text-bingx-cyan transition cursor-pointer';
+                        currencyDisplayMode = btn.getAttribute('data-curr');
+                        updateTickerHeader();
+                    });
+                });
+
+                // Copy Wallet Address Button
+                document.getElementById('copy-wallet-btn').addEventListener('click', () => {
+                    const tempInput = document.createElement('input');
+                    tempInput.value = TARGET_WALLET;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    showToast('Alamat Wallet Disalin', `${TARGET_WALLET} berhasil disalin ke clipboard.`, 'success');
+                });
+
+                // Responsive Chart Resize
+                window.addEventListener('resize', renderChart);
+
+                // Start Real-time Market Ticker Loop
+                if (liveInterval) clearInterval(liveInterval);
+                liveInterval = setInterval(tickMarketSimulation, 1400);
+            }
+
+            // Boot Application
+            window.addEventListener('DOMContentLoaded', checkAuthSession);
+        })();
+    </script>
+</body>
+</html>
